@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warung Sederhana — Menu Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#faf6ef; --card:#ffffff; --ink:#2b2118; --muted:#8a7a66;
+    --brand:#b4552d; --brand-dark:#8c3f20; --gold:#d4a24e; --line:#eadfc9;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .phone{max-width:480px;margin:0 auto;background:var(--bg);min-height:100vh;
+    box-shadow:0 0 40px rgba(0,0,0,.08);padding-bottom:110px}
+
+  header{background:linear-gradient(150deg,#3a2415 0%,#6b3d1e 55%,#b4552d 100%);
+    color:#fff;padding:44px 24px 60px;text-align:center;position:relative}
+  header .kicker{letter-spacing:4px;font-size:11px;color:var(--gold);margin-bottom:10px}
+  header h1{font-family:'Playfair Display',serif;font-size:34px;font-weight:700}
+  header h1 em{font-style:italic;color:var(--gold)}
+  header p{font-size:13px;opacity:.85;margin-top:8px;letter-spacing:1px}
+
+  .tabs{position:sticky;top:0;z-index:20;background:var(--bg);padding:14px 16px 10px;
+    display:flex;gap:10px;overflow-x:auto;border-bottom:1px solid var(--line)}
+  .tabs button{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--muted);
+    padding:9px 20px;border-radius:24px;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer}
+  .tabs button.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:500}
+
+  .menu{padding:18px 16px 8px}
+  .cat-title{font-family:'Playfair Display',serif;font-size:20px;margin:14px 4px 12px;color:var(--brand-dark)}
+  .item{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;
+    display:flex;gap:14px;align-items:center;margin-bottom:12px}
+  .thumb{width:72px;height:72px;flex:0 0 72px;border-radius:12px;
+    background:linear-gradient(135deg,#e8d9bd,#f5ead3);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Playfair Display',serif;font-size:26px;color:var(--brand)}
+  .info{flex:1;min-width:0}
+  .info h3{font-size:15px;font-weight:600}
+  .info p{font-size:12px;color:var(--muted);margin:2px 0 6px}
+  .price{font-family:'Playfair Display',serif;font-size:17px;color:var(--brand-dark);font-weight:700}
+  .qty{display:flex;align-items:center;gap:10px}
+  .qty button{width:32px;height:32px;border-radius:50%;border:1px solid var(--brand);
+    background:#fff;color:var(--brand);font-size:18px;line-height:1;cursor:pointer}
+  .qty button.add{background:var(--brand);color:#fff}
+  .qty span{min-width:20px;text-align:center;font-weight:600}
+
+  .cartbar{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:14px 16px calc(14px + env(safe-area-inset-bottom));
+    background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line)}
+  .cartbar .inner{max-width:480px;margin:0 auto}
+  .cartbar button{width:100%;background:var(--brand);color:#fff;border:none;border-radius:14px;
+    padding:16px;font-size:15px;letter-spacing:1px;font-family:'Jost',sans-serif;font-weight:600;cursor:pointer}
+  .cartbar button:disabled{background:#c9bda9;cursor:default}
+  .cartbar button small{display:block;font-weight:400;font-size:12px;opacity:.9;margin-top:2px}
+
+  .sheet{position:fixed;inset:0;z-index:40;display:none}
+  .sheet.open{display:block}
+  .sheet .veil{position:absolute;inset:0;background:rgba(0,0,0,.5)}
+  .sheet .panel{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:24px 24px 0 0;
+    max-width:480px;margin:0 auto;padding:24px 20px calc(24px + env(safe-area-inset-bottom));
+    max-height:82vh;overflow-y:auto}
+  .sheet h2{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:4px}
+  .sheet .hint{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .row .n{flex:1}
+  .row .n small{color:var(--muted)}
+  .total{display:flex;justify-content:space-between;font-size:17px;font-weight:600;margin:16px 0 6px}
+  .total b{font-family:'Playfair Display',serif;color:var(--brand-dark)}
+  label{font-size:12px;letter-spacing:1px;color:var(--muted)}
+  input{width:100%;padding:12px 14px;margin:6px 0 14px;border:1px solid var(--line);border-radius:10px;
+    font-family:'Jost',sans-serif;font-size:14px}
+  .wa{background:#1faa53;color:#fff;border:none;width:100%;border-radius:14px;padding:16px;
+    font-size:15px;letter-spacing:1px;font-weight:600;font-family:'Jost',sans-serif;cursor:pointer}
+  .close{background:none;border:none;color:var(--muted);width:100%;padding:12px;font-size:13px;cursor:pointer}
+  .empty{text-align:center;color:var(--muted);padding:24px 0;font-size:14px}
+  footer{text-align:center;color:var(--muted);font-size:11px;letter-spacing:2px;padding:26px 0 8px}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <header>
+    <div class="kicker">MENU DIGITAL</div>
+    <h1>Warung <em>Sederhana</em></h1>
+    <p>BUKA SETIAP HARI &middot; 08.00 &ndash; 21.00 WIB</p>
+  </header>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="menu" id="menu"></div>
+
+  <footer>DIPINDAI DARI QR CODE MEJA</footer>
+</div>
+
+<div class="cartbar"><div class="inner">
+  <button id="cartBtn" disabled onclick="bukaSheet()">Pilih menu dulu</button>
+</div></div>
+
+<div class="sheet" id="sheet">
+  <div class="veil" onclick="tutupSheet()"></div>
+  <div class="panel">
+    <h2>Pesanan Kamu</h2>
+    <div class="hint">Cek lagi sebelum dikirim ke WhatsApp warung.</div>
+    <div id="rows"></div>
+    <div class="total"><span>Total</span><b id="total">Rp0</b></div>
+    <label>NOMOR MEJA (OPSIONAL)</label>
+    <input id="meja" placeholder="cth: Meja 5" inputmode="numeric">
+    <button class="wa" onclick="kirimWA()">PESAN VIA WHATSAPP</button>
+    <button class="close" onclick="tutupSheet()">tutup</button>
+  </div>
+</div>
+
+<script>
+/* ============ PENGATURAN WARUNG — GANTI DI SINI ============ */
+const WA_NUMBER = "6281234567890";   // <-- ganti nomor WA warung (format 62...)
+const NAMA_WARUNG = "Warung Sederhana";
+/* =========================================================== */
+
+const MENU = [
+  {kat:"Makanan", nama:"Nasi Goreng Spesial", desc:"Nasi goreng telur + kerupuk + acar", harga:15000},
+  {kat:"Makanan", nama:"Mie Goreng Jawa", desc:"Mie goreng manis gurih khas Jawa", harga:13000},
+  {kat:"Makanan", nama:"Ayam Goreng + Nasi", desc:"Ayam goreng rempah + lalapan + sambal", harga:18000},
+  {kat:"Makanan", nama:"Soto Ayam", desc:"Soto kuning hangat + nasi / lontong", harga:14000},
+  {kat:"Makanan", nama:"Nasi Campur", desc:"Nasi + lauk campur + sayur + sambal", harga:16000},
+  {kat:"Makanan", nama:"Pecel Lele", desc:"Lele goreng + nasi + lalapan + sambal", harga:15000},
+  {kat:"Minuman", nama:"Es Teh Manis", desc:"Teh manis dingin segar", harga:5000},
+  {kat:"Minuman", nama:"Teh Hangat", desc:"Teh manis hangat", harga:4000},
+  {kat:"Minuman", nama:"Es Jeruk", desc:"Jeruk peras asli + es", harga:7000},
+  {kat:"Minuman", nama:"Kopi Tubruk", desc:"Kopi hitam pekat tradisional", harga:6000},
+  {kat:"Minuman", nama:"Es Kopi Susu", desc:"Kopi susu gula aren", harga:10000},
+  {kat:"Minuman", nama:"Jus Alpukat", desc:"Alpukat + susu + es", harga:12000},
+  {kat:"Cemilan", nama:"Pisang Goreng", desc:"Pisang goreng renyah isi 5", harga:10000},
+  {kat:"Cemilan", nama:"Tahu Crispy", desc:"Tahu goreng crispy + cabe rawit", harga:8000},
+  {kat:"Cemilan", nama:"Sempol Ayam", desc:"Sempol ayam goreng isi 5", harga:10000},
+  {kat:"Cemilan", nama:"Roti Bakar Coklat", desc:"Roti bakar selai coklat", harga:12000},
+];
+
+const KATS = ["Semua","Makanan","Minuman","Cemilan"];
+let aktif = "Semua";
+const cart = {}; // index -> qty
+
+const rp = n => "Rp" + n.toLocaleString("id-ID");
+const $ = id => document.getElementById(id);
+
+function renderTabs(){
+  $("tabs").innerHTML = KATS.map(k =>
+    `<button class="${k===aktif?'on':''}" onclick="setKat('${k}')">${k.toUpperCase()}</button>`).join("");
+}
+function setKat(k){ aktif = k; renderTabs(); renderMenu(); }
+
+function renderMenu(){
+  const list = MENU.map((m,i)=>({...m,i})).filter(m => aktif==="Semua" || m.kat===aktif);
+  let html = "", lastKat = "";
+  list.forEach(m=>{
+    if(aktif==="Semua" && m.kat!==lastKat){ html += `<div class="cat-title">${m.kat}</div>`; lastKat = m.kat; }
+    const q = cart[m.i]||0;
+    html += `<div class="item">
+      <div class="thumb">${m.nama[0]}</div>
+      <div class="info"><h3>${m.nama}</h3><p>${m.desc}</p><div class="price">${rp(m.harga)}</div></div>
+      <div class="qty">
+        ${q>0?`<button onclick="ubah(${m.i},-1)">−</button><span>${q}</span>`:""}
+        <button class="add" onclick="ubah(${m.i},1)">+</button>
+      </div></div>`;
+  });
+  $("menu").innerHTML = html;
+}
+
+function ubah(i,d){
+  cart[i] = Math.max(0,(cart[i]||0)+d);
+  if(cart[i]===0) delete cart[i];
+  renderMenu(); renderCartBtn();
+}
+
+function isiCart(){
+  return Object.entries(cart).map(([i,q])=>({...MENU[i], q}));
+}
+function totalHarga(){ return isiCart().reduce((s,m)=>s+m.harga*m.q,0); }
+function totalQty(){ return isiCart().reduce((s,m)=>s+m.q,0); }
+
+function renderCartBtn(){
+  const n = totalQty(), b = $("cartBtn");
+  if(n===0){ b.disabled = true; b.innerHTML = "Pilih menu dulu"; }
+  else{ b.disabled = false; b.innerHTML = `Lihat Pesanan (${n} item) — ${rp(totalHarga())}<small>ketuk untuk cek & kirim via WhatsApp</small>`; }
+}
+
+function bukaSheet(){
+  const items = isiCart();
+  $("rows").innerHTML = items.length ? items.map(m=>
+    `<div class="row"><div class="n">${m.nama} <small>× ${m.q}</small></div>
+     <div>${rp(m.harga*m.q)}</div></div>`).join("")
+    : `<div class="empty">Belum ada pesanan.</div>`;
+  $("total").textContent = rp(totalHarga());
+  $("sheet").classList.add("open");
+}
+function tutupSheet(){ $("sheet").classList.remove("open"); }
+
+function kirimWA(){
+  const items = isiCart();
+  if(!items.length) return;
+  const meja = $("meja").value.trim();
+  let teks = `Halo ${NAMA_WARUNG}!%0ASaya mau pesan:%0A`;
+  items.forEach(m=>{ teks += `%0A- ${m.nama} x${m.q} = ${rp(m.harga*m.q)}`; });
+  teks += `%0A%0ATotal: ${rp(totalHarga())}`;
+  if(meja) teks += `%0AMeja: ${meja}`;
+  teks += `%0ATerima kasih.`;
+  window.open(`https://wa.me/${WA_NUMBER}?text=${teks}`,"_blank");
+}
+
+renderTabs(); renderMenu(); renderCartBtn();
+</script>
+</body>
+</html>
